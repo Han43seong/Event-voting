@@ -1,0 +1,353 @@
+.admin-container {
+  min-height: 100vh;
+  background: #f5f7fa;
+  padding: 20px;
+}
+
+.admin-header {
+  max-width: 1200px;
+  margin: 0 auto 30px;
+}
+
+.admin-header h1 {
+  font-size: 2rem;
+  color: #333;
+}
+
+.admin-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-card {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.admin-card h2 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+  font-weight: 600;
+}
+
+.input-text {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  outline: none;
+  transition: border 0.3s;
+}
+
+.input-text:focus {
+  border-color: #667eea;
+}
+
+.option-input-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.option-input-group .input-text {
+  flex: 1;
+}
+
+.btn-remove {
+  padding: 0 15px;
+  border: none;
+  background: #ff4444;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.btn-add {
+  padding: 10px 20px;
+  background: #f0f0f0;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #666;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+}
+
+.btn-add:hover {
+  background: #e8e8e8;
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btn {
+  padding: 15px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-create {
+  width: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 1.1rem;
+}
+
+.btn-create:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.status-badge {
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.status-badge.active {
+  background: #4caf50;
+  color: white;
+}
+
+.status-badge.inactive {
+  background: #ff9800;
+  color: white;
+}
+
+.poll-info h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.poll-stats {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.stat-label {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.control-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.control-buttons .btn {
+  flex: 1;
+  min-width: 150px;
+}
+
+.btn-start {
+  background: #4caf50;
+  color: white;
+}
+
+.btn-start:hover {
+  background: #45a049;
+}
+
+.btn-stop {
+  background: #ff9800;
+  color: white;
+}
+
+.btn-stop:hover {
+  background: #e68900;
+}
+
+.btn-toggle {
+  background: #2196f3;
+  color: white;
+}
+
+.btn-toggle:hover {
+  background: #0b7dda;
+}
+
+.btn-reset {
+  background: #f44336;
+  color: white;
+}
+
+.btn-reset:hover {
+  background: #da190b;
+}
+
+.results-card {
+  background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+}
+
+.chart-container {
+  margin: 30px 0;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.results-table {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.result-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.result-rank {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #667eea;
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+.result-option {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.result-stats {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.result-votes {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.result-percentage {
+  font-size: 1.1rem;
+  color: #999;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 30px;
+}
+
+.empty-state h2 {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.empty-state p {
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.sub-text {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 10px;
+  }
+
+  .admin-card {
+    padding: 20px;
+  }
+
+  .control-buttons {
+    flex-direction: column;
+  }
+
+  .control-buttons .btn {
+    width: 100%;
+  }
+
+  .poll-stats {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .result-row {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .result-info {
+    flex-direction: column;
+  }
+}
