@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { ref, onValue, runTransaction } from 'firebase/database';
+import { ref, onValue, runTransaction, get } from 'firebase/database';
 import { database } from '../firebase';
+import { generateDeviceId } from '../utils/fingerprint';
 import './VotePage.css';
 
 function VotePage() {
@@ -8,13 +9,37 @@ function VotePage() {
   const [voted, setVoted] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deviceId, setDeviceId] = useState(null);
 
   useEffect(() => {
-    // 이미 투표했는지 확인
-    const hasVoted = sessionStorage.getItem('hasVoted');
-    if (hasVoted) {
-      setVoted(true);
-    }
+    // 디바이스 ID 생성 및 투표 여부 확인
+    const initializeVoteCheck = async () => {
+      try {
+        // 디바이스 ID 생성
+        const id = await generateDeviceId();
+        setDeviceId(id);
+
+        // Firebase에서 이 디바이스가 투표했는지 확인
+        const voterRef = ref(database, `currentPoll/voters/${id}`);
+        const snapshot = await get(voterRef);
+
+        if (snapshot.exists()) {
+          setVoted(true);
+          // localStorage에도 플래그 설정 (빠른 체크용)
+          localStorage.setItem('hasVoted', 'true');
+        } else {
+          // localStorage 체크 (빠른 UI 차단용)
+          const hasVoted = localStorage.getItem('hasVoted');
+          if (hasVoted) {
+            setVoted(true);
+          }
+        }
+      } catch (error) {
+        console.error('투표 확인 오류:', error);
+      }
+    };
+
+    initializeVoteCheck();
 
     // 실시간으로 투표 데이터 감지
     const pollRef = ref(database, 'currentPoll');
@@ -28,9 +53,20 @@ function VotePage() {
   }, []);
 
   const handleVote = async (optionIndex) => {
-    if (voted || !poll || !poll.isActive) return;
+    if (voted || !poll || !poll.isActive || !deviceId) return;
 
     try {
+      // Firebase에서 중복 투표 확인 (최종 검증)
+      const voterRef = ref(database, `currentPoll/voters/${deviceId}`);
+      const voterSnapshot = await get(voterRef);
+
+      if (voterSnapshot.exists()) {
+        alert('이미 투표하셨습니다. 투표는 한 번만 가능합니다.');
+        setVoted(true);
+        localStorage.setItem('hasVoted', 'true');
+        return;
+      }
+
       // 트랜잭션으로 투표 수 증가
       const optionRef = ref(database, `currentPoll/options/${optionIndex}/votes`);
       await runTransaction(optionRef, (currentVotes) => {
@@ -43,9 +79,14 @@ function VotePage() {
         return (currentTotal || 0) + 1;
       });
 
+      // 투표자 기록 저장 (중복 방지용)
+      await runTransaction(voterRef, () => {
+        return true;
+      });
+
       setVoted(true);
       setSelectedOption(optionIndex);
-      sessionStorage.setItem('hasVoted', 'true');
+      localStorage.setItem('hasVoted', 'true');
     } catch (error) {
       console.error('투표 오류:', error);
       alert('투표 중 오류가 발생했습니다. 다시 시도해주세요.');

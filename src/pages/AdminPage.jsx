@@ -9,12 +9,21 @@ function AdminPage() {
   const [question, setQuestion] = useState('');
   const [options, setOptions] = useState(['', '']);
   const [showResults, setShowResults] = useState(true);
+  const [voterCount, setVoterCount] = useState(0);
 
   useEffect(() => {
     const pollRef = ref(database, 'currentPoll');
     const unsubscribe = onValue(pollRef, (snapshot) => {
       const data = snapshot.val();
       setPoll(data);
+
+      // 투표자 수 계산
+      if (data && data.voters) {
+        const count = Object.keys(data.voters).length;
+        setVoterCount(count);
+      } else {
+        setVoterCount(0);
+      }
     });
 
     return () => unsubscribe();
@@ -93,17 +102,48 @@ function AdminPage() {
     }
   };
 
+  const resetVotes = async () => {
+    if (!window.confirm('투표 기록만 초기화하시겠습니까? (투표 수와 투표자 기록이 리셋됩니다)')) {
+      return;
+    }
+
+    try {
+      // 투표 수 초기화
+      const updates = {
+        totalVotes: 0,
+      };
+
+      // 각 선택지의 투표 수 초기화
+      if (poll && poll.options) {
+        poll.options.forEach((_, index) => {
+          updates[`options/${index}/votes`] = 0;
+        });
+      }
+
+      await set(ref(database, 'currentPoll'), {
+        ...poll,
+        ...updates,
+        voters: null, // 투표자 기록 삭제
+      });
+
+      alert('투표 기록이 초기화되었습니다.');
+    } catch (error) {
+      console.error('투표 기록 초기화 오류:', error);
+      alert('초기화 중 오류가 발생했습니다.');
+    }
+  };
+
   const resetPoll = async () => {
-    if (!window.confirm('투표를 초기화하시겠습니까? 모든 투표 데이터가 삭제됩니다.')) {
+    if (!window.confirm('투표를 완전히 삭제하시겠습니까? 모든 투표 데이터가 삭제됩니다.')) {
       return;
     }
 
     try {
       await remove(ref(database, 'currentPoll'));
-      alert('투표가 초기화되었습니다.');
+      alert('투표가 삭제되었습니다.');
     } catch (error) {
-      console.error('투표 초기화 오류:', error);
-      alert('초기화 중 오류가 발생했습니다.');
+      console.error('투표 삭제 오류:', error);
+      alert('삭제 중 오류가 발생했습니다.');
     }
   };
 
@@ -204,6 +244,10 @@ function AdminPage() {
                   <span className="stat-value">{poll.totalVotes || 0}표</span>
                 </div>
                 <div className="stat-item">
+                  <span className="stat-label">실제 투표자 수</span>
+                  <span className="stat-value">{voterCount}명</span>
+                </div>
+                <div className="stat-item">
                   <span className="stat-label">선택지 수</span>
                   <span className="stat-value">{poll.options.length}개</span>
                 </div>
@@ -211,25 +255,32 @@ function AdminPage() {
             </div>
 
             <div className="control-buttons">
-              <button 
+              <button
                 onClick={togglePoll}
                 className={`btn ${poll.isActive ? 'btn-stop' : 'btn-start'}`}
               >
                 {poll.isActive ? '⏸️ 투표 중지' : '▶️ 투표 시작'}
               </button>
-              
-              <button 
+
+              <button
                 onClick={toggleShowResults}
                 className="btn btn-toggle"
               >
                 {poll.showResults ? '👁️ 결과 숨기기' : '👁️‍🗨️ 결과 표시'}
               </button>
-              
-              <button 
+
+              <button
+                onClick={resetVotes}
+                className="btn btn-warning"
+              >
+                🔄 투표 기록 초기화
+              </button>
+
+              <button
                 onClick={resetPoll}
                 className="btn btn-reset"
               >
-                🔄 투표 초기화
+                🗑️ 투표 삭제
               </button>
             </div>
           </div>

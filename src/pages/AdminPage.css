@@ -223,6 +223,15 @@
   background: #0b7dda;
 }
 
+.btn-warning {
+  background: #ff9800;
+  color: white;
+}
+
+.btn-warning:hover {
+  background: #e68900;
+}
+
 .btn-reset {
   background: #f44336;
   color: white;
