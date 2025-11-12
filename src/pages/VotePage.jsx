@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ref, onValue, runTransaction, get } from 'firebase/database';
 import { database } from '../firebase';
 import { generateDeviceId } from '../utils/fingerprint';
 import './VotePage.css';
 
 function VotePage() {
+  const navigate = useNavigate();
   const [poll, setPoll] = useState(null);
   const [voted, setVoted] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -25,14 +27,6 @@ function VotePage() {
 
         if (snapshot.exists()) {
           setVoted(true);
-          // localStorage에도 플래그 설정 (빠른 체크용)
-          localStorage.setItem('hasVoted', 'true');
-        } else {
-          // localStorage 체크 (빠른 UI 차단용)
-          const hasVoted = localStorage.getItem('hasVoted');
-          if (hasVoted) {
-            setVoted(true);
-          }
         }
       } catch (error) {
         console.error('투표 확인 오류:', error);
@@ -50,7 +44,7 @@ function VotePage() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [navigate]);
 
   const handleVote = async (optionIndex) => {
     if (voted || !poll || !poll.isActive || !deviceId) return;
@@ -63,7 +57,6 @@ function VotePage() {
       if (voterSnapshot.exists()) {
         alert('이미 투표하셨습니다. 투표는 한 번만 가능합니다.');
         setVoted(true);
-        localStorage.setItem('hasVoted', 'true');
         return;
       }
 
@@ -86,7 +79,6 @@ function VotePage() {
 
       setVoted(true);
       setSelectedOption(optionIndex);
-      localStorage.setItem('hasVoted', 'true');
     } catch (error) {
       console.error('투표 오류:', error);
       alert('투표 중 오류가 발생했습니다. 다시 시도해주세요.');
@@ -107,10 +99,17 @@ function VotePage() {
   if (!poll) {
     return (
       <div className="vote-container">
-        <div className="no-poll">
-          <h2>🗳️</h2>
-          <p>현재 진행 중인 투표가 없습니다.</p>
-          <p className="sub-text">관리자가 투표를 시작할 때까지 기다려주세요.</p>
+        <div className="vote-card">
+          <div className="success-icon">🗳️</div>
+          <h2>현재 진행 중인 투표가 없습니다</h2>
+          <p className="thank-you">관리자가 투표를 생성할 때까지 기다려주세요.</p>
+          <button
+            className="btn btn-primary"
+            onClick={() => navigate('/')}
+            style={{ marginTop: '30px' }}
+          >
+            홈으로 돌아가기
+          </button>
         </div>
       </div>
     );
@@ -119,9 +118,17 @@ function VotePage() {
   if (!poll.isActive) {
     return (
       <div className="vote-container">
-        <div className="no-poll">
-          <h2>⏸️</h2>
-          <p>투표가 종료되었습니다.</p>
+        <div className="vote-card">
+          <div className="success-icon">⏸️</div>
+          <h2>투표가 종료되었습니다</h2>
+          <p className="thank-you">관리자가 투표를 다시 시작할 때까지 기다려주세요.</p>
+          <button
+            className="btn btn-primary"
+            onClick={() => navigate('/')}
+            style={{ marginTop: '30px' }}
+          >
+            홈으로 돌아가기
+          </button>
         </div>
       </div>
     );
