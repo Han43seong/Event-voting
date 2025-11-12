@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(test:*)",
+      "Bash(cat:*)",
+      "Bash(cursor --install-extension:*)",
+      "Bash(npm install:*)",
+      "Bash(npm search:*)",
+      "Bash(npm run dev:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

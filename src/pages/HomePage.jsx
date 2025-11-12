@@ -60,9 +60,6 @@ function HomePage() {
           )}
         </div>
 
-        <div className="home-footer">
-          <p>기본 관리자 비밀번호: <code>admin1234</code></p>
-        </div>
       </div>
     </div>
   );
