@@ -157,7 +157,7 @@ function AdminPage() {
     }));
   };
 
-  const COLORS = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b', '#fa709a'];
+  const COLORS = ['#a78bfa', '#f0abfc', '#86efac', '#93c5fd', '#fcd34d', '#fca5a5'];
 
   return (
     <div className="admin-container">

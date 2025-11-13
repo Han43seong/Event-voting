@@ -5,29 +5,29 @@
      COLOR SYSTEM
      ======================================== */
 
-  /* Primary Colors */
-  --primary-400: #8b9cf9;
-  --primary-500: #667eea;
-  --primary-600: #5568d3;
-  --primary-700: #764ba2;
-  --primary-800: #5e3b82;
+  /* Primary Colors - Pastel Purple Theme */
+  --primary-400: #c4b5fd;  /* Light pastel purple */
+  --primary-500: #a78bfa;  /* Main pastel purple */
+  --primary-600: #8b5cf6;  /* Medium purple */
+  --primary-700: #7c3aed;  /* Deep purple */
+  --primary-800: #6d28d9;  /* Dark purple */
 
-  /* Semantic Colors */
-  --success-400: #66bb6a;
-  --success-500: #4caf50;
-  --success-600: #43a047;
+  /* Semantic Colors - Pastel Theme */
+  --success-400: #86efac;  /* Pastel green */
+  --success-500: #4ade80;  /* Medium green */
+  --success-600: #22c55e;  /* Deep green */
 
-  --warning-400: #ffa726;
-  --warning-500: #ff9800;
-  --warning-600: #fb8c00;
+  --warning-400: #fcd34d;  /* Pastel yellow */
+  --warning-500: #fbbf24;  /* Medium yellow */
+  --warning-600: #f59e0b;  /* Deep yellow */
 
-  --error-400: #ef5350;
-  --error-500: #f44336;
-  --error-600: #e53935;
+  --error-400: #fca5a5;  /* Pastel red */
+  --error-500: #f87171;  /* Medium red */
+  --error-600: #ef4444;  /* Deep red */
 
-  --info-400: #42a5f5;
-  --info-500: #2196f3;
-  --info-600: #1e88e5;
+  --info-400: #93c5fd;  /* Pastel blue */
+  --info-500: #60a5fa;  /* Medium blue */
+  --info-600: #3b82f6;  /* Deep blue */
 
   /* Neutral Colors */
   --white: #ffffff;
@@ -43,15 +43,16 @@
   --gray-900: #1a1a1a;
   --black: #000000;
 
-  /* Background Colors */
-  --bg-primary: var(--white);
-  --bg-secondary: var(--gray-50);
-  --bg-tertiary: var(--gray-100);
+  /* Background Colors - Pastel Theme */
+  --bg-primary: #fefefe;  /* Pure white */
+  --bg-secondary: #f5f3ff;  /* Very light pastel purple */
+  --bg-tertiary: #faf5ff;  /* Ultra light purple */
+  --bg-gradient: linear-gradient(135deg, #faf5ff 0%, #f0e7ff 50%, #e9d5ff 100%);
 
-  /* Text Colors */
-  --text-primary: var(--gray-800);
-  --text-secondary: var(--gray-600);
-  --text-tertiary: var(--gray-500);
+  /* Text Colors - Pastel Theme */
+  --text-primary: #3b3b3b;  /* Soft dark gray */
+  --text-secondary: #6b7280;  /* Medium gray */
+  --text-tertiary: #9ca3af;  /* Light gray */
   --text-inverse: var(--white);
 
   /* Border Colors */
@@ -60,22 +61,27 @@
   --border-dark: var(--gray-400);
 
   /* ========================================
-     GRADIENTS
+     GRADIENTS - Pastel Theme
      ======================================== */
 
-  --gradient-primary: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
-  --gradient-primary-hover: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%);
-  --gradient-success: linear-gradient(135deg, var(--success-500) 0%, var(--success-600) 100%);
-  --gradient-overlay: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.05) 100%);
+  --gradient-primary: linear-gradient(135deg, #c4b5fd 0%, #a78bfa 50%, #8b5cf6 100%);
+  --gradient-primary-hover: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #7c3aed 100%);
+  --gradient-success: linear-gradient(135deg, #86efac 0%, #4ade80 50%, #22c55e 100%);
+  --gradient-warning: linear-gradient(135deg, #fcd34d 0%, #fbbf24 50%, #f59e0b 100%);
+  --gradient-error: linear-gradient(135deg, #fca5a5 0%, #f87171 50%, #ef4444 100%);
+  --gradient-info: linear-gradient(135deg, #93c5fd 0%, #60a5fa 50%, #3b82f6 100%);
+  --gradient-overlay: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.03) 100%);
+  --gradient-purple-pink: linear-gradient(135deg, #c4b5fd 0%, #f0abfc 50%, #f9a8d4 100%);
+  --gradient-background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #ede9fe 100%);
 
   /* ========================================
      TYPOGRAPHY
      ======================================== */
 
-  /* Font Families */
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  /* Font Families - Figma Design System */
+  --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  --font-display: var(--font-sans);
+  --font-display: 'Manrope', var(--font-sans);
 
   /* Font Sizes (Mobile First) */
   --text-xs: 0.75rem;      /* 12px */
@@ -89,11 +95,12 @@
   --text-4xl: 2.25rem;     /* 36px */
   --text-5xl: 3rem;        /* 48px */
 
-  /* Font Weights */
+  /* Font Weights - Figma Design System */
   --font-normal: 400;
   --font-medium: 500;
   --font-semibold: 600;
   --font-bold: 700;
+  --font-extrabold: 800;  /* For titles from Figma */
 
   /* Line Heights */
   --leading-none: 1;
@@ -146,9 +153,14 @@
   --shadow-2xl: 0 25px 80px 0 rgba(0, 0, 0, 0.35);
   --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
 
+  /* Figma Design System Shadows */
+  --shadow-figma: 30px 20px 50px 0px rgba(84, 74, 113, 0.15);
+  --shadow-figma-lg: 50px 30px 50px 0px rgba(84, 74, 113, 0.15);
+  --shadow-figma-xl: 60px 40px 50px 0px rgba(84, 74, 113, 0.15);
+
   /* Colored Shadows */
-  --shadow-primary: 0 5px 15px rgba(102, 126, 234, 0.3);
-  --shadow-primary-lg: 0 10px 25px rgba(102, 126, 234, 0.4);
+  --shadow-primary: 0 5px 15px rgba(95, 51, 225, 0.3);
+  --shadow-primary-lg: 0 10px 25px rgba(95, 51, 225, 0.4);
   --shadow-success: 0 5px 15px rgba(76, 175, 80, 0.3);
 
   /* ========================================
@@ -205,24 +217,7 @@
 }
 
 /* ========================================
-   DARK MODE SUPPORT (Optional)
+   DARK MODE SUPPORT (Disabled - Using Light Mode Only)
    ======================================== */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-primary: var(--gray-900);
-    --bg-secondary: var(--gray-800);
-    --bg-tertiary: var(--gray-700);
-
-    --text-primary: var(--white);
-    --text-secondary: var(--gray-300);
-    --text-tertiary: var(--gray-400);
-
-    --border-light: var(--gray-700);
-    --border-medium: var(--gray-600);
-    --border-dark: var(--gray-500);
-
-    --glass-bg: rgba(26, 26, 26, 0.95);
-    --glass-border: rgba(255, 255, 255, 0.1);
-  }
-}
+/* Dark mode is disabled to maintain consistent Figma design */

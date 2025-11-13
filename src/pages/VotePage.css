@@ -3,33 +3,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--gradient-primary);
+  background: var(--gradient-background); /* Pastel gradient background */
   padding: var(--space-5);
   position: relative;
   overflow: hidden;
 }
 
-/* 배경 패턴 효과 */
-.vote-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image:
-    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-  pointer-events: none;
-}
-
 .vote-card {
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
+  background: var(--white); /* Figma white background */
   border-radius: var(--radius-2xl);
   padding: var(--space-10) var(--space-8);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-figma); /* Figma shadow style */
   max-width: 600px;
   width: 100%;
   position: relative;
@@ -43,8 +27,8 @@
 
 .poll-question {
   font-size: var(--text-3xl);
-  font-weight: var(--font-bold);
-  color: var(--text-primary);
+  font-weight: var(--font-extrabold); /* Figma extrabold weight */
+  color: var(--primary-500); /* Figma purple color */
   margin-bottom: var(--space-2);
   text-align: center;
   line-height: var(--leading-tight);
@@ -71,22 +55,23 @@
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  min-height: var(--touch-target-large);
-  padding: var(--space-4) var(--space-6);
-  background: var(--bg-secondary);
-  border: 3px solid transparent;
-  border-radius: var(--radius-lg);
+  min-height: 48px; /* Figma height */
+  padding: var(--space-3) var(--space-5);
+  background: var(--white); /* Figma white background */
+  border: none;
+  border-radius: 24px; /* Figma border radius */
   cursor: pointer;
   transition: all var(--transition-base);
   font-size: var(--text-lg);
-  font-weight: var(--font-medium);
+  font-weight: var(--font-bold); /* Figma bold weight */
   text-align: left;
   color: var(--text-primary);
-  -webkit-tap-highlight-color: rgba(102, 126, 234, 0.2);
+  -webkit-tap-highlight-color: rgba(95, 51, 225, 0.2);
   touch-action: manipulation;
   animation: fadeInUp var(--transition-slow) var(--ease-out) backwards;
   position: relative;
   overflow: hidden;
+  box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.1); /* Figma shadow */
 }
 
 .option-btn::before {
@@ -107,9 +92,8 @@
 
 .option-btn:hover {
   color: var(--white) !important;
-  transform: translateX(5px);
-  box-shadow: var(--shadow-primary);
-  border-color: var(--primary-500);
+  transform: translateY(-2px); /* Subtle lift effect */
+  box-shadow: 0px 8px 20px 0px rgba(84, 74, 113, 0.2); /* Enhanced Figma shadow */
 }
 
 .option-btn:hover .option-text,
