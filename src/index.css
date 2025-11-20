@@ -1,20 +1,28 @@
-/* Import Design System */
-@import './styles/design-tokens.css';
-@import './styles/animations.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@layer base {
+  body {
+    @apply bg-neo-yellow text-neo-black font-sans overflow-x-hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-black uppercase tracking-tight;
+  }
 }
 
-body {
-  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: var(--text-primary);
-  background-color: var(--bg-primary);
+@layer components {
+  .btn-neo {
+    @apply px-6 py-3 bg-neo-white border-3 border-neo-black shadow-neo font-bold text-lg transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-lg active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm;
+  }
+  
+  .card-neo {
+    @apply bg-neo-white border-3 border-neo-black shadow-neo p-6;
+  }
+
+  .input-neo {
+    @apply w-full px-4 py-3 border-3 border-neo-black shadow-neo-sm focus:outline-none focus:shadow-neo transition-all;
+  }
 }
 
