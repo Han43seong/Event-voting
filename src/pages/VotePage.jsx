@@ -1,187 +1,140 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ref, onValue, runTransaction, get } from 'firebase/database';
+import { ref, onValue, runTransaction } from 'firebase/database';
 import { database } from '../firebase';
-import { generateDeviceId } from '../utils/fingerprint';
 
 function VotePage() {
-  const navigate = useNavigate();
   const [poll, setPoll] = useState(null);
-  const [voted, setVoted] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [votedOption, setVotedOption] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [deviceId, setDeviceId] = useState(null);
 
   useEffect(() => {
-    const initializeVoteCheck = async () => {
-      try {
-        const id = await generateDeviceId();
-        setDeviceId(id);
-
-        const voterRef = ref(database, `currentPoll/voters/${id}`);
-        const snapshot = await get(voterRef);
-
-        if (snapshot.exists()) {
-          setVoted(true);
-        }
-      } catch (error) {
-        console.error('투표 확인 오류:', error);
-      }
-    };
-
-    initializeVoteCheck();
-
     const pollRef = ref(database, 'currentPoll');
     const unsubscribe = onValue(pollRef, (snapshot) => {
       const data = snapshot.val();
       setPoll(data);
       setLoading(false);
+
+      // Check local storage for previous vote
+      const savedVote = localStorage.getItem('votedOption');
+      if (savedVote) {
+        setVotedOption(parseInt(savedVote));
+      }
     });
 
     return () => unsubscribe();
-  }, [navigate]);
+  }, []);
 
-  const handleVote = async (optionIndex) => {
-    if (voted || !poll || !poll.isActive || !deviceId) return;
+  const handleVote = async (index) => {
+    if (votedOption !== null) return;
+
+    const pollRef = ref(database, 'currentPoll');
 
     try {
-      const voterRef = ref(database, `currentPoll/voters/${deviceId}`);
-      const voterSnapshot = await get(voterRef);
+      await runTransaction(pollRef, (currentData) => {
+        if (currentData) {
+          if (!currentData.options[index].votes) {
+            currentData.options[index].votes = 0;
+          }
+          currentData.options[index].votes++;
+          currentData.totalVotes++;
 
-      if (voterSnapshot.exists()) {
-        alert('이미 투표하셨습니다. 투표는 한 번만 가능합니다.');
-        setVoted(true);
-        return;
-      }
-
-      const optionRef = ref(database, `currentPoll/options/${optionIndex}/votes`);
-      await runTransaction(optionRef, (currentVotes) => {
-        return (currentVotes || 0) + 1;
+          // Record voter (simple IP-like check or just count)
+          if (!currentData.voters) currentData.voters = {};
+          const voterId = Math.random().toString(36).substr(2, 9);
+          currentData.voters[voterId] = index;
+        }
+        return currentData;
       });
 
-      const totalRef = ref(database, 'currentPoll/totalVotes');
-      await runTransaction(totalRef, (currentTotal) => {
-        return (currentTotal || 0) + 1;
-      });
-
-      await runTransaction(voterRef, () => {
-        return true;
-      });
-
-      setVoted(true);
-      setSelectedOption(optionIndex);
+      setVotedOption(index);
+      localStorage.setItem('votedOption', index.toString());
     } catch (error) {
-      console.error('투표 오류:', error);
-      alert('투표 중 오류가 발생했습니다. 다시 시도해주세요.');
+      console.error("투표 중 오류 발생:", error);
+      alert("투표 처리에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-16 w-16 border-4 border-neo-black border-t-neo-pink"></div>
+        <div className="text-ol-accent font-mono animate-pulse">시스템 로딩 중...</div>
       </div>
     );
   }
 
-  if (!poll) {
+  if (!poll || !poll.isActive) {
     return (
-      <div className="card-neo text-center max-w-2xl mx-auto mt-10">
-        <div className="text-6xl mb-4">🗳️</div>
-        <h2 className="text-3xl font-black mb-4">현재 진행 중인 투표가 없습니다</h2>
-        <p className="text-xl mb-8">관리자가 투표를 생성할 때까지 기다려주세요.</p>
-        <button
-          className="btn-neo bg-neo-cyan hover:bg-neo-white"
-          onClick={() => navigate('/')}
-        >
-          홈으로 돌아가기
-        </button>
-      </div>
-    );
-  }
-
-  if (!poll.isActive) {
-    return (
-      <div className="card-neo text-center max-w-2xl mx-auto mt-10 bg-gray-100">
-        <div className="text-6xl mb-4">⏸️</div>
-        <h2 className="text-3xl font-black mb-4">투표가 종료되었습니다</h2>
-        <p className="text-xl mb-8">관리자가 투표를 다시 시작할 때까지 기다려주세요.</p>
-        <button
-          className="btn-neo bg-neo-cyan hover:bg-neo-white"
-          onClick={() => navigate('/')}
-        >
-          홈으로 돌아가기
-        </button>
-      </div>
-    );
-  }
-
-  if (voted) {
-    const totalVotes = poll.totalVotes || 0;
-
-    return (
-      <div className="card-neo max-w-3xl mx-auto mt-10 bg-neo-white">
-        <div className="text-center mb-8">
-          <div className="text-6xl mb-4 animate-bounce">✅</div>
-          <h2 className="text-3xl font-black mb-2">투표가 완료되었습니다!</h2>
-          <p className="text-xl font-bold">참여해 주셔서 감사합니다.</p>
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <div className="card-ol text-center max-w-md w-full">
+          <h2 className="text-2xl font-bold mb-4 text-ol-dim">진행 중인 투표가 없습니다</h2>
+          <p className="text-ol-dim/70 font-mono text-sm">새로운 투표가 시작될 때까지 기다려주세요.</p>
         </div>
-
-        {poll.showResults && (
-          <div className="space-y-6">
-            <h3 className="text-2xl font-black border-b-3 border-neo-black pb-2">현재 투표 결과</h3>
-            {poll.options.map((option, index) => {
-              const votes = option.votes || 0;
-              const percentage = totalVotes > 0 ? ((votes / totalVotes) * 100).toFixed(1) : 0;
-              const isSelected = index === selectedOption;
-
-              return (
-                <div key={index} className={`relative p-4 border-3 border-neo-black ${isSelected ? 'bg-neo-yellow' : 'bg-white'}`}>
-                  <div className="flex justify-between items-end mb-2 relative z-10">
-                    <span className="text-xl font-bold">{option.text}</span>
-                    <span className="text-lg font-black">{votes}표 ({percentage}%)</span>
-                  </div>
-                  <div className="w-full h-4 bg-gray-200 border-2 border-neo-black">
-                    <div
-                      className="h-full bg-neo-pink transition-all duration-1000 ease-out"
-                      style={{ width: `${percentage}%` }}
-                    ></div>
-                  </div>
-                  {isSelected && <div className="absolute top-2 right-2 text-xs font-black bg-neo-black text-neo-white px-2 py-1">MY VOTE</div>}
-                </div>
-              );
-            })}
-            <div className="text-right font-black text-xl mt-4">총 {totalVotes}명 참여</div>
-          </div>
-        )}
       </div>
     );
   }
 
   return (
-    <div className="card-neo max-w-3xl mx-auto mt-10">
-      <h2 className="text-3xl md:text-4xl font-black mb-2 text-center">{poll.question}</h2>
-      <p className="text-xl text-center mb-8 font-bold bg-neo-yellow inline-block mx-auto px-4 border-2 border-neo-black transform -rotate-1">하나를 선택해주세요</p>
+    <div className="max-w-3xl mx-auto py-12">
+      <div className="card-ol mb-8">
+        <div className="flex items-center justify-between mb-8 border-b border-ol-gray pb-4">
+          <span className="font-mono text-xs text-ol-accent tracking-widest">실시간 투표</span>
+          <span className="font-mono text-xs text-ol-dim">총 투표 수: {poll.totalVotes}</span>
+        </div>
 
-      <div className="grid gap-4">
-        {poll.options.map((option, index) => (
-          <button
-            key={index}
-            className="group relative w-full text-left p-6 bg-white border-3 border-neo-black shadow-neo hover:shadow-neo-lg hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm"
-            onClick={() => handleVote(index)}
-          >
-            <div className="flex items-center">
-              <span className="flex items-center justify-center w-10 h-10 bg-neo-black text-neo-white font-black text-xl mr-4 group-hover:bg-neo-pink group-hover:text-neo-black transition-colors">
-                {index + 1}
-              </span>
-              <span className="text-xl font-bold group-hover:underline decoration-4 underline-offset-4 decoration-neo-pink">{option.text}</span>
-            </div>
-          </button>
-        ))}
-      </div>
+        <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center leading-tight">
+          {poll.question}
+        </h2>
 
-      <div className="mt-8 text-center">
-        <p className="font-bold text-sm bg-gray-200 inline-block px-3 py-1 border-2 border-neo-black">💡 투표는 한 번만 가능합니다</p>
+        <div className="space-y-4">
+          {poll.options.map((option, index) => {
+            const isSelected = votedOption === index;
+            const percentage = poll.totalVotes > 0
+              ? Math.round((option.votes / poll.totalVotes) * 100)
+              : 0;
+
+            return (
+              <div key={index} className="relative group">
+                {poll.showResults || votedOption !== null ? (
+                  // Result View
+                  <div className={`relative overflow-hidden border ${isSelected ? 'border-ol-accent' : 'border-ol-gray'} p-4 transition-all duration-500`}>
+                    <div
+                      className="absolute top-0 left-0 h-full bg-ol-gray/30 transition-all duration-1000 ease-out"
+                      style={{ width: `${percentage}%` }}
+                    />
+                    <div className="relative flex justify-between items-center z-10">
+                      <span className={`font-medium ${isSelected ? 'text-ol-accent' : 'text-ol-text'}`}>
+                        {option.text}
+                      </span>
+                      <span className="font-mono font-bold">
+                        {percentage}%
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  // Voting View
+                  <button
+                    onClick={() => handleVote(index)}
+                    disabled={votedOption !== null}
+                    className={`w-full text-left p-6 border border-ol-dim hover:border-ol-accent hover:bg-ol-accent/5 transition-all duration-300 group ${votedOption !== null ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg group-hover:text-ol-accent transition-colors">{option.text}</span>
+                      <span className="text-ol-dim group-hover:text-ol-accent transition-colors text-xl">→</span>
+                    </div>
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {votedOption !== null && (
+          <div className="mt-8 text-center animate-fade-in">
+            <p className="text-ol-accent font-mono text-sm tracking-widest">
+              투표가 완료되었습니다
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

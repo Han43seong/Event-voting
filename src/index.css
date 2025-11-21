@@ -4,25 +4,53 @@
 
 @layer base {
   body {
-    @apply bg-neo-yellow text-neo-black font-sans overflow-x-hidden;
+    @apply bg-ol-base text-ol-text font-sans antialiased overflow-x-hidden selection:bg-ol-accent selection:text-ol-base;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-black uppercase tracking-tight;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold tracking-tight;
   }
 }
 
 @layer components {
-  .btn-neo {
-    @apply px-6 py-3 bg-neo-white border-3 border-neo-black shadow-neo font-bold text-lg transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-lg active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm;
-  }
-  
-  .card-neo {
-    @apply bg-neo-white border-3 border-neo-black shadow-neo p-6;
+  .btn-ol {
+    @apply px-6 py-2 border border-ol-dim text-ol-text font-mono text-sm uppercase tracking-wider transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed bg-transparent;
   }
 
-  .input-neo {
-    @apply w-full px-4 py-3 border-3 border-neo-black shadow-neo-sm focus:outline-none focus:shadow-neo transition-all;
+  .btn-ol:hover {
+    @apply border-ol-accent text-ol-accent shadow-ol-glow;
+  }
+
+  .btn-ol-accent {
+    @apply px-6 py-2 bg-ol-accent text-ol-base font-mono text-sm font-bold uppercase tracking-wider transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed border border-ol-accent;
+  }
+
+  .btn-ol-accent:hover {
+    @apply bg-white shadow-ol-glow-strong;
+  }
+
+  .card-ol {
+    @apply bg-ol-base/80 backdrop-blur-sm border border-ol-gray p-6 transition-colors duration-300;
+  }
+
+  .card-ol:hover {
+    @apply border-ol-dim;
+  }
+
+  .input-ol {
+    @apply w-full bg-transparent border-b border-ol-gray py-2 text-ol-text font-mono focus:border-ol-accent focus:outline-none transition-colors placeholder-ol-dim/50;
+  }
+
+  .nav-link {
+    @apply text-ol-dim transition-colors duration-300 text-sm font-mono uppercase tracking-widest;
+  }
+
+  .nav-link:hover {
+    @apply text-ol-accent;
   }
 }
-
