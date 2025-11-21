@@ -113,8 +113,8 @@ function VotePage() {
 
             return (
               <div key={index} className="relative group">
-                {poll.showResults || votedOption !== null ? (
-                  // Result View
+                {poll.showResults ? (
+                  // Result View - Only shown when showResults is true
                   <div className={`relative overflow-hidden border ${isSelected ? 'border-ol-accent' : 'border-ol-gray'} p-4 transition-all duration-500`}>
                     <div
                       className="absolute top-0 left-0 h-full bg-ol-gray/30 transition-all duration-1000 ease-out"
@@ -127,6 +127,18 @@ function VotePage() {
                       <span className="font-mono font-bold">
                         {percentage}%
                       </span>
+                    </div>
+                  </div>
+                ) : votedOption !== null ? (
+                  // Voted but results hidden - Just show the option with indication
+                  <div className={`relative overflow-hidden border ${isSelected ? 'border-ol-accent' : 'border-ol-gray'} p-6 transition-all duration-500`}>
+                    <div className="flex items-center justify-between">
+                      <span className={`text-lg ${isSelected ? 'text-ol-accent font-medium' : 'text-ol-text'}`}>
+                        {option.text}
+                      </span>
+                      {isSelected && (
+                        <span className="text-ol-accent text-sm font-mono">✓ 선택함</span>
+                      )}
                     </div>
                   </div>
                 ) : (
