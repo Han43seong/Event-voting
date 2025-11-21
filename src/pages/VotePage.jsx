@@ -14,10 +14,25 @@ function VotePage() {
       setPoll(data);
       setLoading(false);
 
-      // Check local storage for previous vote
-      const savedVote = localStorage.getItem('votedOption');
-      if (savedVote) {
-        setVotedOption(parseInt(savedVote));
+      // Check local storage for previous vote, but only for this specific poll
+      if (data && data.createdAt) {
+        const savedVoteData = localStorage.getItem('votedOption');
+        if (savedVoteData) {
+          try {
+            const { pollId, optionIndex } = JSON.parse(savedVoteData);
+            // Only restore vote if it's for the current poll
+            if (pollId === data.createdAt) {
+              setVotedOption(optionIndex);
+            } else {
+              // Clear old vote data if it's for a different poll
+              setVotedOption(null);
+            }
+          } catch (e) {
+            // Invalid saved data, clear it
+            localStorage.removeItem('votedOption');
+            setVotedOption(null);
+          }
+        }
       }
     });
 
@@ -25,7 +40,7 @@ function VotePage() {
   }, []);
 
   const handleVote = async (index) => {
-    if (votedOption !== null) return;
+    if (votedOption !== null || !poll) return;
 
     const pollRef = ref(database, 'currentPoll');
 
@@ -47,7 +62,11 @@ function VotePage() {
       });
 
       setVotedOption(index);
-      localStorage.setItem('votedOption', index.toString());
+      // Save vote with poll ID to prevent confusion between different polls
+      localStorage.setItem('votedOption', JSON.stringify({
+        pollId: poll.createdAt,
+        optionIndex: index
+      }));
     } catch (error) {
       console.error("투표 중 오류 발생:", error);
       alert("투표 처리에 실패했습니다. 다시 시도해주세요.");
