@@ -4,6 +4,7 @@ import { database } from '../firebase';
 
 function VotePage() {
   const [poll, setPoll] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
   const [votedOption, setVotedOption] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -26,11 +27,13 @@ function VotePage() {
             } else {
               // Clear old vote data if it's for a different poll
               setVotedOption(null);
+              setSelectedOption(null);
             }
           } catch (e) {
             // Invalid saved data, clear it
             localStorage.removeItem('votedOption');
             setVotedOption(null);
+            setSelectedOption(null);
           }
         }
       }
@@ -39,33 +42,38 @@ function VotePage() {
     return () => unsubscribe();
   }, []);
 
-  const handleVote = async (index) => {
-    if (votedOption !== null || !poll) return;
+  const handleSelectOption = (index) => {
+    if (votedOption !== null) return;
+    setSelectedOption(index);
+  };
+
+  const handleConfirmVote = async () => {
+    if (selectedOption === null || votedOption !== null || !poll) return;
 
     const pollRef = ref(database, 'currentPoll');
 
     try {
       await runTransaction(pollRef, (currentData) => {
         if (currentData) {
-          if (!currentData.options[index].votes) {
-            currentData.options[index].votes = 0;
+          if (!currentData.options[selectedOption].votes) {
+            currentData.options[selectedOption].votes = 0;
           }
-          currentData.options[index].votes++;
+          currentData.options[selectedOption].votes++;
           currentData.totalVotes++;
 
           // Record voter (simple IP-like check or just count)
           if (!currentData.voters) currentData.voters = {};
           const voterId = Math.random().toString(36).substr(2, 9);
-          currentData.voters[voterId] = index;
+          currentData.voters[voterId] = selectedOption;
         }
         return currentData;
       });
 
-      setVotedOption(index);
+      setVotedOption(selectedOption);
       // Save vote with poll ID to prevent confusion between different polls
       localStorage.setItem('votedOption', JSON.stringify({
         pollId: poll.createdAt,
-        optionIndex: index
+        optionIndex: selectedOption
       }));
     } catch (error) {
       console.error("투표 중 오류 발생:", error);
@@ -106,14 +114,15 @@ function VotePage() {
 
         <div className="space-y-4">
           {poll.options.map((option, index) => {
-            const isSelected = votedOption === index;
+            const hasVoted = votedOption !== null;
+            const isSelected = hasVoted ? votedOption === index : selectedOption === index;
             const percentage = poll.totalVotes > 0
               ? Math.round((option.votes / poll.totalVotes) * 100)
               : 0;
 
             return (
               <div key={index} className="relative group">
-                {votedOption !== null ? (
+                {hasVoted ? (
                   // User has voted - show results based on showResults setting
                   poll.showResults ? (
                     // showResults is ON - Display percentages
@@ -145,15 +154,21 @@ function VotePage() {
                     </div>
                   )
                 ) : (
-                  // User hasn't voted yet - Show voting buttons
+                  // User hasn't voted yet - Show voting buttons (Selection Mode)
                   <button
-                    onClick={() => handleVote(index)}
-                    disabled={votedOption !== null}
-                    className={`w-full text-left p-6 border border-ol-dim hover:border-ol-accent hover:bg-ol-accent/5 transition-all duration-300 group ${votedOption !== null ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    onClick={() => handleSelectOption(index)}
+                    className={`w-full text-left p-6 border transition-all duration-300 group ${isSelected
+                        ? 'border-ol-accent bg-ol-accent/10 shadow-[0_0_15px_rgba(34,197,94,0.1)]'
+                        : 'border-ol-dim hover:border-ol-accent hover:bg-ol-accent/5'
+                      }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-lg group-hover:text-ol-accent transition-colors">{option.text}</span>
-                      <span className="text-ol-dim group-hover:text-ol-accent transition-colors text-xl">→</span>
+                      <span className={`text-lg transition-colors ${isSelected ? 'text-ol-accent font-bold' : 'group-hover:text-ol-accent'}`}>
+                        {option.text}
+                      </span>
+                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${isSelected ? 'border-ol-accent' : 'border-ol-dim'}`}>
+                        {isSelected && <div className="w-2 h-2 rounded-full bg-ol-accent" />}
+                      </div>
                     </div>
                   </button>
                 )}
@@ -162,7 +177,21 @@ function VotePage() {
           })}
         </div>
 
-        {votedOption !== null && (
+        {/* Action Area */}
+        {votedOption === null ? (
+          <div className="mt-12 pt-6 border-t border-ol-gray/30 flex justify-center">
+            <button
+              onClick={handleConfirmVote}
+              disabled={selectedOption === null}
+              className={`w-full md:w-auto px-12 py-4 font-mono font-bold text-lg tracking-wider transition-all duration-300 ${selectedOption !== null
+                  ? 'bg-ol-accent text-black hover:bg-white hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]'
+                  : 'bg-ol-dim/20 text-ol-dim cursor-not-allowed'
+                }`}
+            >
+              {selectedOption !== null ? '투표 확인' : '옵션을 선택하세요'}
+            </button>
+          </div>
+        ) : (
           <div className="mt-8 text-center animate-fade-in">
             <p className="text-ol-accent font-mono text-sm tracking-widest">
               투표가 완료되었습니다

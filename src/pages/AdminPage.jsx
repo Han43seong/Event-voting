@@ -88,7 +88,7 @@ function AdminPage() {
       setNewPoll({ question: '', options: ['', ''], showResults: true });
     } catch (error) {
       console.error('Error creating poll:', error);
-      alert('투표 생성 실패');
+      alert(`투표 생성 실패: ${error.message}`);
     }
   };
 
